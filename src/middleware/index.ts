@@ -4,5 +4,7 @@ import {
   handleCompression
 } from "./commons";
 
-export default [handleCors, handleBodyRequestParsing, handleCompression];
+import { handleAPIDocs } from "./apiDocs";
+
+export default [handleCors, handleBodyRequestParsing, handleCompression, handleAPIDocs];
 

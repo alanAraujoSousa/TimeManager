@@ -1,3 +1,4 @@
-import searchRoutes from "./search/routes";
+import attendanceRoutes from "./attendance/routes";
+import availabilityRoutes from "./availability/routes";
 
-export default [ ...searchRoutes];
+export default [ ...attendanceRoutes, availabilityRoutes];
