@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAttendances, createAttendance } from "./AvailabilityController";
+import { getAttendances, createAttendance } from "./AttendanceController";
 import { checkSearchIntervalParams } from "../../middleware/checkInterval";
 
 export default [

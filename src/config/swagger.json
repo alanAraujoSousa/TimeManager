@@ -23,21 +23,6 @@
         "content": {
           "application/json": {}
         }
-      },
-      "post": {
-        "tags": ["Attendence"],
-        "summary": "Create a attendance rules",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad request"
-          }
-        },
-        "content": {
-          "application/json": {}
-        }
       }
     }
   }

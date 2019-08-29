@@ -19,7 +19,7 @@ describe("routes", () => {
     applyMiddleware(errorHandlers, router);
   });
 
-   test("list all", async () => {
+   test("from rest interface list all attendances", async () => {
     const response = await request(router).get("/api/v1/attendance");
     expect(response.status).toEqual(200);
   });
