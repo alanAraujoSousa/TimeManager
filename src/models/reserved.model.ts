@@ -1,4 +1,9 @@
-class Reserved {
+class Reserved implements Frequency{
+    
+    day!: Date;
 
-    day: Date;
+    doAlgorithm(): void {
+        throw new Error("Method not implemented.");
+    }
+
 }

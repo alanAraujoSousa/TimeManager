@@ -1,16 +1,15 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "title": ""
   },
-  "host": "localhost:3000",
-  "basePath": "/api/v1",
-  "schemes": ["http"],
-  "produces": ["application/json"],
   "paths": {
     "/attendance": {
       "get": {
-        "tags": ["Attendence"],
+        "tags": [
+          "Attendence"
+        ],
         "summary": "Search by attendance rules",
         "responses": {
           "200": {
@@ -21,11 +20,14 @@
           }
         },
         "content": {
-          "application/json": {}
+          "application/json": {
+          }
         }
       },
       "post": {
-        "tags": ["Attendence"],
+        "tags": [
+          "Attendence"
+        ],
         "summary": "create a attendance rule",
         "responses": {
           "200": {
@@ -35,70 +37,96 @@
             "description": "Bad request"
           }
         },
-        "parameters": [{
-          "in": "body",
-          "name": "body",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Attendance"
+              }
+            }
+          },
           "description": "The attendance to create",
-          "required": true,
-          "schema": {
-            "$ref": "#/definitions/Attendance"
-          }
-        }], 
+          "required": true
+        },
         "content": {
-          "application/json": {}
+          "application/json": {
+          }
         }
       }
     }
   },
-  "definitions": {
-    "Attendance": {
-      "type": "object",
-      "required": "intervals",
-      "properties": {
-        "frequency": {
-          "$ref": "#/definitions/Reserved"
-        },
-        "intervals": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Interval"
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Attendance": {
+        "type": "object",
+        "required": "intervals",
+        "properties": {
+          "frequency": {
+            "$ref": "#/components/schemas/Frequency"
+          },
+          "intervals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Interval"
+            }
           }
         }
-      }
-    },
-    "Interval": {
-      "type": "object",
-      "required": ["start", "end"],
-      "properties": {
-        "start": {
-          "type": "string",
-          "example": "00:00"
-        },
-        "end": {
-          "type": "string",
-          "example": "01:00"
-        }
-      }
-    },
-    "Reserved": {
-      "type": "object",
-      "required": "day",
-      "properties": {
-        "day": {
-          "type": "string",
-          "example": "01/01/2020"
-        }
-      }
-    },
-    "Weekly": {
-      "type": "object",
-      "required": "days",
-      "properties": {
-        "days": {
-          "type": "array",
-          "items": {
+      },
+      "Frequency": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Reserved"
+          },
+          {
+            "$ref": "#/components/schemas/Weekly"
+          }
+        ]
+      },
+      "Interval": {
+        "type": "object",
+        "required": [
+          "start",
+          "end"
+        ],
+        "properties": {
+          "start": {
             "type": "string",
-            "example": ["Monday", "Wednesday"]
+            "example": "00:00"
+          },
+          "end": {
+            "type": "string",
+            "example": "00:00"
+          }
+        }
+      },
+      "Reserved": {
+        "type": "object",
+        "required": "day",
+        "properties": {
+          "day": {
+            "type": "string",
+            "example": "01/01/2020"
+          }
+        }
+      },
+      "Weekly": {
+        "type": "object",
+        "required": "days",
+        "properties": {
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": [
+                "Monday",
+                "Wednesday"
+              ]
+            }
           }
         }
       }

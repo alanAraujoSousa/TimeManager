@@ -1,31 +1,32 @@
 import { Request } from "express";
-import { Attendance } from "../models/Attendance";
+import { Attendance } from "../../models/attendance.model";
 
 export const getAttendances = () => {
    return [];
 };
 
 export const createAttendance = (req: Request) => {
+
    let attendance = req.body as Attendance;
    console.log(attendance);
 
-   let frequency = attendance.frequency;
-   let intervals = attendance.intervals;
+   let frequency = attendance.frequency as Frequency;
 
+   let mock = {
+      "intervals": [
+        {
+          "start": "00:00",
+          "end": "00:00"
+        }
+      ]
+    };
 
-
+   // daily
    if (typeof frequency == undefined) {
-      // daily
 
-   } else if (typeof frequency == "object") { // trocar pela checagem de tipo typescript Weekly ou Reserved
-      if (frequency.day) {
-         // reserved
-         let day = frequency.day;
-         
-         console.log(day);
-      } else {
-         // weekly
-         console.log()
-      }
+      
+      
+   } else { 
+      frequency.doAlgorithm();
    }
 };

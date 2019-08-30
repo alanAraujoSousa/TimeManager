@@ -1,4 +1,8 @@
-class Weekly {
+class Weekly implements Frequency{
+    
+    days!: string[];
 
-    days: string[];
+    doAlgorithm(): void {
+        throw new Error("Method not implemented.");
+    }
 }
