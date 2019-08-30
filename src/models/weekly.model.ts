@@ -2,7 +2,8 @@ class Weekly implements Frequency{
     
     days!: string[];
 
-    doAlgorithm(): void {
+    containsIn(frequency: Frequency): boolean {
         throw new Error("Method not implemented.");
+        return false;
     }
 }

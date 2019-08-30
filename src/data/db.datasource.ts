@@ -20,7 +20,7 @@ export const list = (): Attendance[] => {
     let transformStream = parse( "*" );
     var inputStream = createReadStream( "./db.json" )
         .pipe(transformStream)
-        .pipe(mapSync(function (data: any) {
+        .pipe(mapSync(function (data: Attendance) {
 
             console.error(data);
             
@@ -29,4 +29,27 @@ export const list = (): Attendance[] => {
     }));
 
     return attendances;
+};
+
+export const get = (id: number): Attendance => {
+    
+    let attendance: Attendance = new Attendance;
+
+    let transformStream = parse( "*" );
+    var inputStream = createReadStream( "./db.json" )
+        .pipe(transformStream)
+        .pipe(mapSync(function (data: Attendance) {
+
+            attendance = data;
+            if (attendance.id() == id) {
+                return data;
+            }
+
+            console.error(data);
+            
+             
+            return data;
+    }));
+
+    return attendance;
 };

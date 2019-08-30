@@ -1,4 +1,4 @@
 interface Frequency {
     
-    doAlgorithm(): void;
+    containsIn(frequency: Frequency): boolean;
 }
