@@ -1,28 +1,8 @@
+export class Attendance {
 
-class Attendance {
+    id: number | undefined;
 
-    private _id: number | undefined;
+    frequency: undefined | Weekly | Reserved;
 
-    private _frequency: undefined | Weekly | Reserved;
-
-    private _intervals: Interval[] = [];
-
-    constructor(interval: Interval[]) {
-        this._intervals = interval;
-    }
-
-    
-    public get id() : number | undefined {
-        return this._id;
-    }
-    
-    
-    public set id(v : number | undefined) {
-        this._id = v;
-    }
-    
-
-    public get intervals() {
-        return this._intervals;
-    }
+    intervals: Interval[] = [];
 }

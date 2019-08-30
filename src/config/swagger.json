@@ -23,6 +23,84 @@
         "content": {
           "application/json": {}
         }
+      },
+      "post": {
+        "tags": ["Attendence"],
+        "summary": "create a attendance rule",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "parameters": [{
+          "in": "body",
+          "name": "body",
+          "description": "The attendance to create",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/Attendance"
+          }
+        }], 
+        "content": {
+          "application/json": {}
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Attendance": {
+      "type": "object",
+      "required": "intervals",
+      "properties": {
+        "frequency": {
+          "$ref": "#/definitions/Reserved"
+        },
+        "intervals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Interval"
+          }
+        }
+      }
+    },
+    "Interval": {
+      "type": "object",
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "type": "string",
+          "example": "00:00"
+        },
+        "end": {
+          "type": "string",
+          "example": "01:00"
+        }
+      }
+    },
+    "Reserved": {
+      "type": "object",
+      "required": "day",
+      "properties": {
+        "day": {
+          "type": "string",
+          "example": "01/01/2020"
+        }
+      }
+    },
+    "Weekly": {
+      "type": "object",
+      "required": "days",
+      "properties": {
+        "days": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": ["Monday", "Wednesday"]
+          }
+        }
       }
     }
   }
