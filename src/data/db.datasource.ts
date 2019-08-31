@@ -3,6 +3,8 @@ import { mapSync } from "event-stream";
 import { Attendance } from "../models/attendance.model";
 import db from "../data/db.json"; 
 
+const dbPath = "./dist/data/db.json"
+
 export const persist = (attendance: Attendance): number => {
 
     let attendances = list();
@@ -15,7 +17,7 @@ export const persist = (attendance: Attendance): number => {
     attendance.id = id;
 
     attendances.push(attendance);
-    writeFileSync("/home/alan/Área de Trabalho/workspace/node/TimeManager/dist/data/db.json", JSON.stringify(attendances));
+    writeFileSync(dbPath, JSON.stringify(attendances));
 
     return id;
 };
@@ -23,7 +25,7 @@ export const persist = (attendance: Attendance): number => {
 export const list = (): Attendance[] => {
     
     let attendances: Attendance[] = [];
-    let data = readFileSync("/home/alan/Área de Trabalho/workspace/node/TimeManager/dist/data/db.json");
+    let data = readFileSync(dbPath);
     attendances = JSON.parse(data.toString());
     
     return attendances;
@@ -40,7 +42,7 @@ export const find = (id: number): Attendance | null => {
 export const destroy = (id: number) => {
     let all = list();
     all.splice(all.findIndex((a) => a.id == id), 1);
-    writeFileSync("/home/alan/Área de Trabalho/workspace/node/TimeManager/dist/data/db.json", JSON.stringify(all));
+    writeFileSync(dbPath, JSON.stringify(all));
 }
 
 export const update = (id: number, attendance: Attendance) => {

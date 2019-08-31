@@ -80,7 +80,7 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
 
             let startTimeFromDB = moment(newDay)
                 .hours(parseInt(startOfInterval.split(":")[0]))
-                .minutes(parseInt(startOfInterval.split(":")[1]));
+                .minutes(parseInt(startOfInterval.split(":")[1])); // TODO -1 min para os intervalos não se chocarem
 
             if (newDay.isBefore(startTimeFromDB)) {
                
@@ -93,7 +93,7 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
 
             let endOfInterval = intervalFromDB.end;
             newDay.hours(parseInt(endOfInterval.split(":")[0]))
-                .minutes(parseInt(endOfInterval.split(":")[1]) + 1); // +1 para os intervalos não se chocarem
+                .minutes(parseInt(endOfInterval.split(":")[1])); // TODO +1 min para os intervalos não se chocarem
 
             // se não existirem intervalos para processar coloca a hora do fim do dia.
             if (i == allIntervalsFromDB.length - 1) {
