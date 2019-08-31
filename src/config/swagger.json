@@ -5,6 +5,46 @@
     "title": ""
   },
   "paths": {
+    "/availability": {
+      "get": {
+        "tags": [
+          "Availability"
+        ],
+        "summary": "List all free intervals to register new rules",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "start",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The initial date of interval"
+          },
+          {
+            "in": "query",
+            "name": "end",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The end of interval"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "content": {
+          "application/json": {
+          }
+        }
+      }
+    },
     "/attendance": {
       "get": {
         "tags": [
@@ -138,7 +178,7 @@
         "properties": {
           "day": {
             "type": "string",
-            "example": "01/01/2020"
+            "example": "01-01-2020"
           }
         }
       },
@@ -154,6 +194,22 @@
                 "Monday",
                 "Wednesday"
               ]
+            }
+          }
+        }
+      },
+      "Availability": {
+        "type": "object",
+        "required": "day",
+        "properties": {
+          "day": {
+            "type": "string",
+            "example": "01-01-2020"
+          },
+          "intervals": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Interval"
             }
           }
         }

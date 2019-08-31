@@ -11,10 +11,10 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
     let allAttendances = new AttendanceRepository().list();
 
     var startDate = moment(start, "DD-MM-YYYY");
-    var endDate = moment(end, "DD-MM-YYY");
+    var endDate = moment(end, "DD-MM-YYYY");
     
     //Difference in number of days
-    var days = moment.duration(startDate.diff(endDate)).asDays();
+    var days = moment.duration(endDate.diff(startDate)).asDays();
 
     for (let i = 0; i <= days; i++) {
 
@@ -32,22 +32,22 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
             let intervalsFromDB = a.intervals;
 
             if (!frequencyFromDB) { // daily
-                allIntervalsFromDB.concat(intervalsFromDB);
-            } else if (frequencyFromDB instanceof Weekly) {
+                allIntervalsFromDB = allIntervalsFromDB.concat(intervalsFromDB);
+            } else if ((frequencyFromDB as Weekly).days) {
                 
-                let daysDB = frequencyFromDB.days;
+                let daysDB = (frequencyFromDB as Weekly).days;
 
                 for (let i = 0; i < daysDB.length; i++) {
                     const dayDB = daysDB[i];
                     if (moment().day(dayDB).weekday() == newDay.weekday()) {
-                        allIntervalsFromDB.concat(intervalsFromDB); 
+                        allIntervalsFromDB = allIntervalsFromDB.concat(intervalsFromDB); 
                         break;
                     }   
                 }
             } else { 
                 let dateDayFromDB = (frequencyFromDB as Reserved).day;
                 if (dateDayFromDB === newDay.format("DD-MM-YYYY")) {
-                    allIntervalsFromDB.concat(intervalsFromDB); 
+                    allIntervalsFromDB = allIntervalsFromDB.concat(intervalsFromDB); 
                 }
             }              
         });
@@ -96,7 +96,7 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
                 .minutes(parseInt(endOfInterval.split(":")[1]) + 1); // +1 para os intervalos não se chocarem
 
             // se não existirem intervalos para processar coloca a hora do fim do dia.
-            if (i != allIntervalsFromDB.length - 1) {
+            if (i == allIntervalsFromDB.length - 1) {
                 let interval = new Interval();
                 interval.start = newDay.format("HH:mm");
                 interval.end = newDay.endOf("day").format("HH:mm");
@@ -104,7 +104,7 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
                 freeIntervals.push(interval);
             }
         }
-
+        availability.intervals = freeIntervals;
         availabilities.push(availability);
     }
 
