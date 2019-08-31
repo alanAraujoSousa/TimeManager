@@ -1,6 +1,9 @@
 import moment from "moment";
 import { Availability } from "../../models/availability.model";
 import { AttendanceRepository } from "../../repository/attendance.repository";
+import { Interval } from "../../models/interval.model";
+import { Weekly } from "../../models/weekly.model";
+import { Reserved } from "../../models/reserved.model";
 
 export const getAvailabilityByInterval = (start: string, end: string): Availability[] => {
     

@@ -1,8 +1,11 @@
 import { Request } from "express";
 import { Attendance } from "../../models/attendance.model";
+import { Weekly } from "../../models/weekly.model";
+import { Reserved } from "../../models/reserved.model";
 import { AttendanceRepository } from "../../repository/attendance.repository"
 import { HTTP400Error } from "../../utils/httpErrors";
 import moment from "moment";
+import { Interval } from "../../models/interval.model";
 
 
 export const deleteAttendance = (id: number) => {
@@ -23,8 +26,9 @@ export const createAttendance = (attendanceReceived: Attendance): number => {
    let repo = new AttendanceRepository;
       
    let attendancesFromDB = repo.list();
-   attendancesFromDB.forEach((a) => {
-
+   for (let i = 0; i < attendancesFromDB.length; i++) {
+      const a = attendancesFromDB[i];
+      
       let frequencyFromDB = a.frequency;
       let intervalsFromDB = a.intervals;
       
@@ -32,15 +36,15 @@ export const createAttendance = (attendanceReceived: Attendance): number => {
          someIntervalContainInAnothers(intervalsFromDB, intervalsReceived); // error 400
       } else { // weekly or reserved I have necessity to check the received
 
-         if (frequencyFromDB instanceof Weekly) { // db: weekly I: need to check
+         if ((frequencyFromDB as Weekly).days) { // db: weekly I: need to check
 
             if(!frequencyReceived) { // db: weekly I: daily
                someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
-            } else if (frequencyReceived instanceof Weekly) { // db: weekly I: weekly
+            } else if ((frequencyReceived as Weekly).days) { // db: weekly I: weekly
 
-               let daysDB = frequencyFromDB.days;
+               let daysDB = (frequencyFromDB as Weekly).days;
 
-               frequencyReceived.days.forEach((dayReceived) => {
+               (frequencyReceived as Weekly).days.forEach((dayReceived) => {
                   daysDB.forEach((dayDB) => {
                      if (moment().day(dayDB).weekday() == moment().day(dayReceived).weekday()) {
                         someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
@@ -50,7 +54,8 @@ export const createAttendance = (attendanceReceived: Attendance): number => {
             } else { // db: weekly I: Reserved
 
                let dateDayReceived = (frequencyReceived as Reserved).day;
-               frequencyFromDB.days.forEach((dayDB) => {
+
+               (frequencyFromDB as Weekly).days.forEach((dayDB) => {
                   if (moment().day(dayDB).weekday() == moment(dateDayReceived, "DD-MM-YYYY").weekday()) {
                      someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
                   }
@@ -60,10 +65,11 @@ export const createAttendance = (attendanceReceived: Attendance): number => {
 
             if(!frequencyReceived) { // db: Reserved I: daily
                someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
-            } else if (frequencyReceived instanceof Weekly) { // db: Reserved I: weekly
+            } else if ((frequencyReceived as Weekly).days) { // db: Reserved I: weekly
 
                let dateDayFromDB = (frequencyFromDB as Reserved).day;
-               frequencyReceived.days.forEach((dayDB) => {
+
+               (frequencyReceived as Weekly).days.forEach((dayDB) => {
                   if (moment().day(dayDB).weekday() == moment(dateDayFromDB, "DD-MM-YYYY").weekday()) {
                      someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
                   }
@@ -80,7 +86,7 @@ export const createAttendance = (attendanceReceived: Attendance): number => {
             }
          }
       }      
-   });   
+   }
 
    return repo.save(attendanceReceived);
 };

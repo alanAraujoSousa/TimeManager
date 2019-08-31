@@ -8,7 +8,7 @@ export default [
     path: "/api/v1/attendance",
     method: "get",
     handler: async (req : Request, res: Response) => {
-       res.status(200).send();
+       res.status(200).send(getAttendances());
     }
   },
   {

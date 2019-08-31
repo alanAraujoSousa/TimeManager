@@ -1,4 +1,6 @@
-class Weekly implements Frequency{
+import { Frequency } from "./frequency.model";
+
+export class Weekly implements Frequency {
     
     days!: string[];
 
@@ -6,4 +8,8 @@ class Weekly implements Frequency{
         throw new Error("Method not implemented.");
         return false;
     }
+
+    getFrequency(): string | string[] {
+        return this.days;
+     }
 }

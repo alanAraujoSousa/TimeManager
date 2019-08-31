@@ -1,4 +1,4 @@
-class Interval {
+export class Interval {
 
     start!: string;
     end!: string;
