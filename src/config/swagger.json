@@ -10,7 +10,7 @@
         "tags": [
           "Attendence"
         ],
-        "summary": "Search by attendance rules",
+        "summary": "List attendance rules",
         "responses": {
           "200": {
             "description": "OK"
@@ -52,6 +52,34 @@
           "application/json": {
           }
         }
+      }
+    },
+    "/attendance/{ruleId}": {
+      "delete": {
+        "tags": [
+          "Attendence"
+        ],
+        "summary": "delete a attendance rule by id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "ruleId",
+            "in": "path",
+            "description": "Id of attendance rule",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ]
       }
     }
   },

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsc-watch --onSuccess \"node ./dist/server.js\"",
+    "pretest": "rm -rf dist",
     "test": "jest --coverage --verbose"
   },
   "keywords": [],
@@ -43,6 +44,7 @@
     "event-stream": "^4.0.1",
     "express": "^5.0.0-alpha.7",
     "file-system": "^2.2.2",
+    "moment": "^2.24.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "supertest": "^4.0.2",

@@ -1,6 +1,6 @@
 class Reserved implements Frequency{
     
-    day!: Date;
+    day!: string;
 
     containsIn(frequency: Frequency): boolean {
         throw new Error("Method not implemented.");

@@ -2,9 +2,17 @@ import { Request } from "express";
 import { Attendance } from "../../models/attendance.model";
 import { AttendanceRepository } from "../../repository/attendance.repository"
 import { HTTP400Error } from "../../utils/httpErrors";
+import moment from "moment";
+
+
+export const deleteAttendance = (id: number) => {
+   let repo = new AttendanceRepository();
+   repo.delete(id);
+}
 
 export const getAttendances = (): Attendance[] => {
-   return [];
+   let repo = new AttendanceRepository();
+   return repo.list();
 };
 
 export const getHourAsDate = (hour: String): Date => {
@@ -25,18 +33,16 @@ export const intervalContainsAnother = (intervalRoot: Interval, intervalChild: I
    return ((startIntervalRoot.getTime() <= startIntervalChild.getTime() 
       && endIntervalRoot.getTime() >= startIntervalChild.getTime()) 
       || (startIntervalRoot.getTime() <= endIntervalChild.getTime() 
-         && endIntervalRoot.getTime() >= endIntervalChild.getTime())) {
-   }
+         && endIntervalRoot.getTime() >= endIntervalChild.getTime()));
 }
 
-export const someIntervalContainInAnothers = (intervalsRoot: Interval[], intervalsChild: Interval[]): boolean => {
+export const someIntervalContainInAnothers = (intervalsRoot: Interval[], intervalsChild: Interval[]) => {
    intervalsRoot.forEach((intervalRoot) => {
       intervalsChild.forEach((intervalChild) => {
          if (intervalContainsAnother(intervalRoot, intervalChild))
-            return true;
+            throw new HTTP400Error("The attendance informed is not unique.");
       });
    });  
-   return false;
 }
 
 export const createAttendance = (attendanceReceived: Attendance) => {
@@ -52,42 +58,56 @@ export const createAttendance = (attendanceReceived: Attendance) => {
       let frequencyFromDB = a.frequency;
       let intervalsFromDB = a.intervals;
       
-      if (!frequencyFromDB) { // daily frequency on DB
+      if (!frequencyFromDB) { // daily frequency on DB, no need to check the received
+         someIntervalContainInAnothers(intervalsFromDB, intervalsReceived); // error 400
+      } else { // weekly or reserved I have necessity to check the received
 
-         if (someIntervalContainInAnothers(intervalsFromDB, intervalsReceived))
-            throw new HTTP400Error("The attendance informed is not unique."); // error 400
-      
-      } else { // weekly or reserved
-
-         if (frequencyFromDB instanceof Weekly) {
+         if (frequencyFromDB instanceof Weekly) { // db: weekly I: need to check
 
             if(!frequencyReceived) { // db: weekly I: daily
-
-               if (someIntervalContainInAnothers(intervalsFromDB, intervalsReceived))
-                  throw new HTTP400Error("The attendance informed is not unique."); 
-
+               someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
             } else if (frequencyReceived instanceof Weekly) { // db: weekly I: weekly
 
-               let daysReceived = frequencyReceived.days;
                let daysDB = frequencyFromDB.days;
 
-               daysDB.forEach((dayDB) => {
-                  daysReceived.forEach((dayReceived) => {
-                     if (dayDB === dayReceived) {
-                        if (someIntervalContainInAnothers(intervalsFromDB, intervalsReceived))
-                           throw new HTTP400Error("The attendance informed is not unique."); 
+               frequencyReceived.days.forEach((dayReceived) => {
+                  daysDB.forEach((dayDB) => {
+                     if (moment().day(dayDB).weekday() == moment().day(dayReceived).weekday()) {
+                        someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
                      }
                   });
                });
             } else { // db: weekly I: Reserved
-               
+
+               let dateDayReceived = (frequencyReceived as Reserved).day;
+               frequencyFromDB.days.forEach((dayDB) => {
+                  if (moment().day(dayDB).weekday() == moment(dateDayReceived, "DD/MM/YYY").weekday()) {
+                     someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
+                  }
+               });
             }
          } else { // db: reserved I: need to check
 
-         }
+            if(!frequencyReceived) { // db: Reserved I: daily
+               someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
+            } else if (frequencyReceived instanceof Weekly) { // db: Reserved I: weekly
 
-         if (frequencyFromDB!.containsIn(frequencyReceived!)) {
-            throw new HTTP400Error("The attendance informed is not unique."); // error 400
+               let dateDayFromDB = (frequencyFromDB as Reserved).day;
+               frequencyReceived.days.forEach((dayDB) => {
+                  if (moment().day(dayDB).weekday() == moment(dateDayFromDB, "DD/MM/YYY").weekday()) {
+                     someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
+                  }
+               });
+
+            } else { // db: Reserved I: Reserved
+
+               let dateDayFromDB = (frequencyFromDB as Reserved).day;
+               let dateDayReceived = (frequencyReceived as Reserved).day;
+               
+               if (dateDayFromDB === dateDayReceived) {
+                  someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
+               }
+            }
          }
       }      
    });   
