@@ -8,8 +8,8 @@ export class AttendanceRepository {
         destroy(id);
     }
 
-    save(attendance: Attendance) {
-        persist(attendance);
+    save(attendance: Attendance): number {
+        return persist(attendance);
     };
 
     list(): Attendance[] {

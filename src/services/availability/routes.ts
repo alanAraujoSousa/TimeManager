@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAvailabilityByInterval } from "./AvailabilityController";
+import { getAvailabilityByInterval } from "./availability.controller";
 import { checkSearchIntervalParams } from "../../middleware/checkInterval";
 
 export default [

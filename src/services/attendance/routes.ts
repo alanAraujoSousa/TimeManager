@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAttendances, createAttendance, deleteAttendance } from "./AttendanceController";
+import { getAttendances, createAttendance, deleteAttendance } from "./attendance.controller";
 import { checkSearchIntervalParams } from "../../middleware/checkInterval";
 import { Attendance } from "../../models/attendance.model";
 

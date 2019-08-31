@@ -3,7 +3,7 @@ import { mapSync } from "event-stream";
 import { Attendance } from "../models/attendance.model";
 import db from "../data/db.json"; 
 
-export const persist = (attendance: Attendance) => {
+export const persist = (attendance: Attendance): number => {
 
     let attendances = list();
     let data: any = attendance;
@@ -16,6 +16,8 @@ export const persist = (attendance: Attendance) => {
 
     attendances.push(attendance);
     writeFileSync("/home/alan/Área de Trabalho/workspace/node/TimeManager/dist/data/db.json", JSON.stringify(attendances));
+
+    return id;
 };
 
 export const list = (): Attendance[] => {

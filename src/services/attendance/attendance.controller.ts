@@ -15,37 +15,7 @@ export const getAttendances = (): Attendance[] => {
    return repo.list();
 };
 
-export const getHourAsDate = (hour: String): Date => {
-   let hourSplit = hour.split(":");
-   let hourMinute = Number.parseInt(hourSplit[0]);
-   let hoursecond = Number.parseInt(hourSplit[1]);
-   return new Date(2000, 1, 1, hourMinute, hoursecond, 0, 0);
-}
-
-export const intervalContainsAnother = (intervalRoot: Interval, intervalChild: Interval): boolean => {
-
-   let startIntervalRoot = getHourAsDate(intervalRoot.start);
-   let endIntervalRoot = getHourAsDate(intervalRoot.end);
-
-   let startIntervalChild = getHourAsDate(intervalChild.start);
-   let endIntervalChild = getHourAsDate(intervalChild.end);
-
-   return ((startIntervalRoot.getTime() <= startIntervalChild.getTime() 
-      && endIntervalRoot.getTime() >= startIntervalChild.getTime()) 
-      || (startIntervalRoot.getTime() <= endIntervalChild.getTime() 
-         && endIntervalRoot.getTime() >= endIntervalChild.getTime()));
-}
-
-export const someIntervalContainInAnothers = (intervalsRoot: Interval[], intervalsChild: Interval[]) => {
-   intervalsRoot.forEach((intervalRoot) => {
-      intervalsChild.forEach((intervalChild) => {
-         if (intervalContainsAnother(intervalRoot, intervalChild))
-            throw new HTTP400Error("The attendance informed is not unique.");
-      });
-   });  
-}
-
-export const createAttendance = (attendanceReceived: Attendance) => {
+export const createAttendance = (attendanceReceived: Attendance): number => {
 
    let frequencyReceived = attendanceReceived.frequency;
    let intervalsReceived = attendanceReceived.intervals;
@@ -81,7 +51,7 @@ export const createAttendance = (attendanceReceived: Attendance) => {
 
                let dateDayReceived = (frequencyReceived as Reserved).day;
                frequencyFromDB.days.forEach((dayDB) => {
-                  if (moment().day(dayDB).weekday() == moment(dateDayReceived, "DD/MM/YYY").weekday()) {
+                  if (moment().day(dayDB).weekday() == moment(dateDayReceived, "DD-MM-YYYY").weekday()) {
                      someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
                   }
                });
@@ -94,7 +64,7 @@ export const createAttendance = (attendanceReceived: Attendance) => {
 
                let dateDayFromDB = (frequencyFromDB as Reserved).day;
                frequencyReceived.days.forEach((dayDB) => {
-                  if (moment().day(dayDB).weekday() == moment(dateDayFromDB, "DD/MM/YYY").weekday()) {
+                  if (moment().day(dayDB).weekday() == moment(dateDayFromDB, "DD-MM-YYYY").weekday()) {
                      someIntervalContainInAnothers(intervalsFromDB, intervalsReceived);
                   }
                });
@@ -112,5 +82,35 @@ export const createAttendance = (attendanceReceived: Attendance) => {
       }      
    });   
 
-   repo.save(attendanceReceived);
+   return repo.save(attendanceReceived);
 };
+
+const getHourAsDate = (hour: String): Date => {
+   let hourSplit = hour.split(":");
+   let hourMinute = Number.parseInt(hourSplit[0]);
+   let hoursecond = Number.parseInt(hourSplit[1]);
+   return new Date(2000, 1, 1, hourMinute, hoursecond, 0, 0);
+}
+
+const intervalContainsAnother = (intervalRoot: Interval, intervalChild: Interval): boolean => {
+
+   let startIntervalRoot = getHourAsDate(intervalRoot.start);
+   let endIntervalRoot = getHourAsDate(intervalRoot.end);
+
+   let startIntervalChild = getHourAsDate(intervalChild.start);
+   let endIntervalChild = getHourAsDate(intervalChild.end);
+
+   return ((startIntervalRoot.getTime() <= startIntervalChild.getTime() 
+      && endIntervalRoot.getTime() >= startIntervalChild.getTime()) 
+      || (startIntervalRoot.getTime() <= endIntervalChild.getTime() 
+         && endIntervalRoot.getTime() >= endIntervalChild.getTime()));
+}
+
+const someIntervalContainInAnothers = (intervalsRoot: Interval[], intervalsChild: Interval[]) => {
+   intervalsRoot.forEach((intervalRoot) => {
+      intervalsChild.forEach((intervalChild) => {
+         if (intervalContainsAnother(intervalRoot, intervalChild))
+            throw new HTTP400Error("The attendance informed is not unique.");
+      });
+   });  
+}
