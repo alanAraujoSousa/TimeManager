@@ -43,7 +43,7 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
                 }
             } else { 
                 let dateDayFromDB = (frequencyFromDB as Reserved).day;
-                if (dateDayFromDB === newDay.format("")) {
+                if (dateDayFromDB === newDay.format("DD-MM-YYYY")) {
                     allIntervalsFromDB.concat(intervalsFromDB); 
                 }
             }              
@@ -70,25 +70,37 @@ export const getAvailabilityByInterval = (start: string, end: string): Availabil
             }
         });
 
-        allIntervalsFromDB.forEach((intervalFromDB) => {
+        for (let i = 0; i < allIntervalsFromDB.length; i++) {
 
+            const intervalFromDB = allIntervalsFromDB[i];
             let startOfInterval = intervalFromDB.start;
 
-            let timeFromDB = moment(newDay)
+            let startTimeFromDB = moment(newDay)
                 .hours(parseInt(startOfInterval.split(":")[0]))
                 .minutes(parseInt(startOfInterval.split(":")[1]));
 
-            if (newDay.isBefore(timeFromDB)) {
+            if (newDay.isBefore(startTimeFromDB)) {
+               
                 let interval = new Interval();
-
                 interval.start = newDay.format("HH:mm");
                 interval.end = startOfInterval;
+               
                 freeIntervals.push(interval);
             }
 
-            let end = intervalFromDB.end;
+            let endOfInterval = intervalFromDB.end;
+            newDay.hours(parseInt(endOfInterval.split(":")[0]))
+                .minutes(parseInt(endOfInterval.split(":")[1]) + 1); // +1 para os intervalos não se chocarem
 
-        });
+            // se não existirem intervalos para processar coloca a hora do fim do dia.
+            if (i != allIntervalsFromDB.length - 1) {
+                let interval = new Interval();
+                interval.start = newDay.format("HH:mm");
+                interval.end = newDay.endOf("day").format("HH:mm");
+               
+                freeIntervals.push(interval);
+            }
+        }
 
         availabilities.push(availability);
     }
